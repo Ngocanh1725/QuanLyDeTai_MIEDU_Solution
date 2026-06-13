@@ -32,10 +32,3 @@ namespace QuanLyDeTai_MIEDU.ConsoleApp
         }
     }
 }
-
-namespace QuanLyDeTai_MIEDU.ConsoleApp
-{
-    internal class LoginDialog
-    {
-    }
-}

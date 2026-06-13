@@ -7,8 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System;
-using System.Windows.Forms;
 using QuanLyDeTai_MIEDU.Models;
 
 namespace QuanLyDeTai_MIEDU.WinForms
@@ -16,7 +14,11 @@ namespace QuanLyDeTai_MIEDU.WinForms
     public partial class LoginForm : Form
     {
         DatabaseHelper db = new DatabaseHelper();
-        public LoginForm() { InitializeComponent(); }
+
+        public LoginForm()
+        {
+            InitializeComponent();
+        }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
@@ -28,18 +30,10 @@ namespace QuanLyDeTai_MIEDU.WinForms
                 main.FormClosed += (s, args) => this.Close();
                 main.Show();
             }
-            else MessageBox.Show("Sai tài khoản / mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
-}
-
-namespace QuanLyDeTai_MIEDU.WinForms
-{
-    public partial class LoginForm : Form
-    {
-        public LoginForm()
-        {
-            InitializeComponent();
+            else
+            {
+                MessageBox.Show("Sai tài khoản / mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
