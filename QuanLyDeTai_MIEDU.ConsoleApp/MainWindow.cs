@@ -1,23 +1,23 @@
 ﻿using NStack;
+using QuanLyDeTai_MIEDU.BLL.Services;
 using QuanLyDeTai_MIEDU.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terminal.Gui;
 
 namespace QuanLyDeTai_MIEDU.ConsoleApp
 {
     public class MainWindow : Toplevel
     {
-        private IQuanLyDeTai _db;
+        // Khai báo DeTaiBLL thay vì interface CSDL
+        private DeTaiBLL _bll = new DeTaiBLL();
         private TableView _tableView;
 
-        public MainWindow(TaiKhoan user, IQuanLyDeTai db)
+        public MainWindow(TaiKhoan user)
         {
-            _db = db; this.ColorScheme = ThemeManager.HackerScheme;
+            this.ColorScheme = ThemeManager.HackerScheme;
+
             var menu = new MenuBar(new MenuBarItem[] {
                 new MenuBarItem ("_Hệ thống", new MenuItem [] { new MenuItem ("_Đăng xuất", "", () => Application.RequestStop()) })
             });
@@ -37,22 +37,38 @@ namespace QuanLyDeTai_MIEDU.ConsoleApp
                 if (e.Item == 4) SearchData();
             };
 
-            leftPane.Add(menuList); rightPane.Add(_tableView); win.Add(leftPane, rightPane);
-            this.Add(menu, win); RefreshData();
+            leftPane.Add(menuList);
+            rightPane.Add(_tableView);
+            win.Add(leftPane, rightPane);
+            this.Add(menu, win);
+
+            RefreshData();
         }
 
-        private void RefreshData() => LoadDataToTable(_db.LayDanhSach());
+        private void RefreshData() => LoadDataToTable(_bll.LayDanhSach());
+
         private void LoadDataToTable(List<DeTai> list)
         {
             DataTable dt = new DataTable();
-            dt.Columns.Add("Mã ĐT"); dt.Columns.Add("Tên Đề Tài"); dt.Columns.Add("Mã GV"); dt.Columns.Add("Giờ Gốc"); dt.Columns.Add("Giờ Quy Đổi");
-            foreach (var item in list) dt.Rows.Add(item.MaDeTai, item.TenDeTai, item.MaGV, item.SoGioGoc, item.TinhGioNghienCuu());
-            _tableView.Table = dt; _tableView.Update();
+            dt.Columns.Add("Mã ĐT");
+            dt.Columns.Add("Tên Đề Tài");
+            dt.Columns.Add("Mã GV");
+            dt.Columns.Add("Giờ Gốc");
+            dt.Columns.Add("Giờ Quy Đổi");
+
+            foreach (var item in list)
+            {
+                // Gọi Đa hình (TinhGioNghienCuu) ở đây
+                dt.Rows.Add(item.MaDeTai, item.TenDeTai, item.MaGV, item.SoGioGoc, item.TinhGioNghienCuu());
+            }
+
+            _tableView.Table = dt;
+            _tableView.Update();
         }
 
         private void ShowAddDialog(DeTai dt)
         {
-            var dialog = new AddDeTaiDialog(_db, dt);
+            var dialog = new AddDeTaiDialog(dt);
             Application.Run(dialog);
             if (dialog.IsSaved) RefreshData();
         }
@@ -61,8 +77,9 @@ namespace QuanLyDeTai_MIEDU.ConsoleApp
         {
             if (_tableView.SelectedRow < 0) return;
             string ma = _tableView.Table.Rows[_tableView.SelectedRow][0].ToString();
-            // Lấy tạm object cũ để sửa
-            var list = _db.TimKiem(ma);
+
+            // Lấy lại danh sách tìm kiếm để có object nạp lên form
+            var list = _bll.TimKiem(ma);
             if (list.Count > 0) ShowAddDialog(list[0]);
         }
 
@@ -70,7 +87,19 @@ namespace QuanLyDeTai_MIEDU.ConsoleApp
         {
             if (_tableView.SelectedRow < 0) return;
             string ma = _tableView.Table.Rows[_tableView.SelectedRow][0].ToString();
-            if (MessageBox.Query("Xóa", $"Bạn muốn xóa Đề tài {ma}?", "Có", "Không") == 0) { _db.XoaDeTai(ma); RefreshData(); }
+
+            if (MessageBox.Query("Xóa", $"Bạn muốn xóa Đề tài {ma}?", "Có", "Không") == 0)
+            {
+                try
+                {
+                    _bll.XoaDeTai(ma);
+                    RefreshData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.ErrorQuery("Lỗi", ex.Message, "OK");
+                }
+            }
         }
 
         private void SearchData()
@@ -78,9 +107,14 @@ namespace QuanLyDeTai_MIEDU.ConsoleApp
             var dialog = new Dialog("Tìm kiếm", 40, 8);
             var txtQuery = new TextField("") { X = 10, Y = 2, Width = 20 };
             var btnTim = new Button("Tìm") { X = Pos.Center(), Y = 4 };
-            btnTim.Clicked += () => { LoadDataToTable(_db.TimKiem(txtQuery.Text.ToString())); Application.RequestStop(); };
-            dialog.Add(new Label("Từ khóa:") { X = 2, Y = 2 }, txtQuery, btnTim); Application.Run(dialog);
+
+            btnTim.Clicked += () => {
+                LoadDataToTable(_bll.TimKiem(txtQuery.Text.ToString()));
+                Application.RequestStop();
+            };
+
+            dialog.Add(new Label("Từ khóa:") { X = 2, Y = 2 }, txtQuery, btnTim);
+            Application.Run(dialog);
         }
     }
 }
-

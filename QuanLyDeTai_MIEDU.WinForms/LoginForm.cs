@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using QuanLyDeTai_MIEDU.Models;
+using QuanLyDeTai_MIEDU.BLL.Services;
 
 namespace QuanLyDeTai_MIEDU.WinForms
 {
     public partial class LoginForm : Form
     {
-        DatabaseHelper db = new DatabaseHelper();
+        // Khởi tạo BLL, tuyệt đối không dùng DAL hay SQL ở đây
+        private AuthBLL _authBll = new AuthBLL();
 
         public LoginForm()
         {
@@ -22,17 +17,25 @@ namespace QuanLyDeTai_MIEDU.WinForms
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            TaiKhoan user = db.DangNhap(txtUser.Text, txtPass.Text);
-            if (user != null)
+            try
             {
-                this.Hide();
-                MainForm main = new MainForm(user);
-                main.FormClosed += (s, args) => this.Close();
-                main.Show();
+                TaiKhoan user = _authBll.Login(txtUser.Text, txtPass.Text);
+                if (user != null)
+                {
+                    this.Hide();
+                    MainForm main = new MainForm(user);
+                    main.FormClosed += (s, args) => this.Close();
+                    main.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Sai tài khoản hoặc mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Sai tài khoản / mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Bắt lỗi từ tầng BLL (Ví dụ: để trống tài khoản)
+                MessageBox.Show(ex.Message, "Cảnh báo nghiệp vụ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

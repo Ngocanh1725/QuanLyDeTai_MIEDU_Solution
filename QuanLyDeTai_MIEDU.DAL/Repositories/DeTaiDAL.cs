@@ -1,28 +1,18 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using QuanLyDeTai_MIEDU.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 
-namespace QuanLyDeTai_MIEDU.Models
+namespace QuanLyDeTai_MIEDU.DAL.Repositories
 {
-    public class DatabaseHelper : IQuanLyDeTai
+    // Cài đặt Interface IQuanLyDeTai từ Models
+    public class DeTaiDAL : IQuanLyDeTai
     {
-        // Nhớ cập nhật Server Name nếu cần
         private string connString = @"Server=localhost;Database=QuanLy_DeTaiMIEDU;Trusted_Connection=True;TrustServerCertificate=True;";
 
         public TaiKhoan DangNhap(string username, string password)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM TaiKhoan WHERE TenDangNhap=@u AND MatKhau=@p", conn);
-                cmd.Parameters.AddWithValue("@u", username); cmd.Parameters.AddWithValue("@p", password);
-                conn.Open();
-                SqlDataReader r = cmd.ExecuteReader();
-                if (r.Read()) return new TaiKhoan(r["TenDangNhap"].ToString(), r["MatKhau"].ToString(), r["HoTen"].ToString(), r["Quyen"].ToString());
-                return null;
-            }
+            throw new NotImplementedException("Hàm này đã chuyển sang AuthDAL");
         }
 
         public List<DeTai> LayDanhSach(string query = "SELECT * FROM DeTaiNghienCuu")

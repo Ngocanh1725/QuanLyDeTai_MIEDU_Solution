@@ -10,18 +10,19 @@ namespace QuanLyDeTai_MIEDU.ConsoleApp
             Application.Init();
             ThemeManager.Initialize();
 
-            IQuanLyDeTai db = new DatabaseHelper();
+            // Xóa dòng tạo DB ở đây, các form sẽ tự gọi BLL
             while (true)
             {
-                var loginDialog = new LoginDialog(db);
+                var loginDialog = new LoginDialog();
                 Application.Run(loginDialog);
+
                 if (loginDialog.AuthenticatedUser == null) break;
 
-                var mainWindow = new MainWindow(loginDialog.AuthenticatedUser, db);
+                var mainWindow = new MainWindow(loginDialog.AuthenticatedUser);
                 Application.Run(mainWindow);
             }
+
             Application.Shutdown();
         }
     }
 }
-

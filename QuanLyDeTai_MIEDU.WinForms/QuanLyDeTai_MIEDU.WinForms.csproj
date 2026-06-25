@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\QuanLyDeTai_MIEDU.BLL\QuanLyDeTai_MIEDU.BLL.csproj" />
     <ProjectReference Include="..\QuanLyDeTai_MIEDU.Models\QuanLyDeTai_MIEDU.Models.csproj" />
   </ItemGroup>
 
