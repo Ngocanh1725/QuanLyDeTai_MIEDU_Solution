@@ -7,7 +7,6 @@ namespace QuanLyDeTai_MIEDU.WinForms
 {
     public partial class LoginForm : Form
     {
-        // Khởi tạo BLL, tuyệt đối không dùng DAL hay SQL ở đây
         private AuthBLL _authBll = new AuthBLL();
 
         public LoginForm()
@@ -29,13 +28,12 @@ namespace QuanLyDeTai_MIEDU.WinForms
                 }
                 else
                 {
-                    MessageBox.Show("Sai tài khoản hoặc mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Sai tài khoản hoặc mật khẩu!", "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                // Bắt lỗi từ tầng BLL (Ví dụ: để trống tài khoản)
-                MessageBox.Show(ex.Message, "Cảnh báo nghiệp vụ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(ex.Message, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

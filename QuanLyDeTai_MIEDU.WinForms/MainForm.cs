@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using QuanLyDeTai_MIEDU.Models;
 
@@ -18,15 +11,25 @@ namespace QuanLyDeTai_MIEDU.WinForms
             InitializeComponent();
             lblTitle.Text = $"Xin chào: {user.HoTen}";
 
-            // Khởi tạo Component Quản lý 
-            OpenControl(new DeTaiControl());
+            // Khởi tạo Màn hình chính
+            OpenControl(new DeTaiControl(), "BẢNG ĐIỀU KHIỂN - QUẢN LÝ ĐỀ TÀI");
         }
 
-        private void OpenControl(UserControl uc)
+        private void OpenControl(UserControl uc, string title)
         {
-            pnlContent.Controls.Clear(); uc.Dock = DockStyle.Fill; pnlContent.Controls.Add(uc);
+            pnlContent.Controls.Clear();
+            uc.Dock = DockStyle.Fill;
+            pnlContent.Controls.Add(uc);
+            lblTitle.Text = title;
         }
 
-        private void btnLogout_Click(object sender, EventArgs e) => Application.Restart();
+        private void btnQuanLy_Click(object sender, EventArgs e)
+            => OpenControl(new DeTaiControl(), "QUẢN LÝ ĐỀ TÀI CHUNG");
+
+        private void btnThongKe_Click(object sender, EventArgs e)
+            => OpenControl(new ucGiangVien_DeTai(), "BÁO CÁO & THỐNG KÊ GIẢNG VIÊN");
+
+        private void btnLogout_Click(object sender, EventArgs e)
+            => Application.Restart();
     }
 }
